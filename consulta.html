@@ -289,44 +289,51 @@
 
         /* No mobile, reduzimos a fonte e o espaçamento */
             @media (max-width: 600px) {
-            table {
-                font-size: 11px; /* Fonte pequena para caber tudo */
-                table-layout: fixed; /* OBRIGATÓRIO para a quebra funcionar */
-                width: 100% !important;
-        
-            }
+    /* 1. Transforma a tabela em um layout flexível */
+    #corpoTabela tr {
+        display: flex; /* Alinha as colunas uma ao lado da outra sem vácuo */
+        width: 100%;
+        border-bottom: 1px solid var(--border);
+        padding: 8px 0;
+        align-items: center; /* Centraliza verticalmente o conteúdo da linha */
+    }
 
-            th, td {
-                padding: 5px 2px !important; /* Mínimo espaço lateral */
-                letter-spacing: -0.5px; /* Letras mais próximas para economizar largura */
-                line-height: 1.2;
-                word-wrap: break-word; /* Quebra o nome em duas linhas se for grande */
-                overflow-wrap: break-word;
-                word-break: break-word;
-                white-space: normal;
-                border-bottom: 1px solid var(--border);
-                vertical-align: middle;
-                color: var(--text);
-            }
+    /* 2. Remove o comportamento rígido das células */
+    #corpoTabela td {
+        display: block;
+        padding: 0 4px !important;
+        border: none !important;
+        box-sizing: border-box;
+    }
 
-            /* Distribuição milimétrica das colunas */
-            th:nth-child(1), td:nth-child(1) { width: 17%; } /* Data */
-            th:nth-child(2), td:nth-child(2) { width: 10%; } /* Dia */
-            th:nth-child(3), td:nth-child(3) { width: 43%; } /* Voluntário */
-            th:nth-child(4), td:nth-child(4) { width: 30%; } /* Depto */
-
-            .voluntario-nome {
-                
-                font-weight: bold;
-                display: block;
-                line-height: 1.1;
-                color: var(--primary) !important;
-            }
+    /* 3. Distribuição "Elástica" das colunas */
     
-            .container {
-                padding: 10px 5px !important; /* Ganha espaço nas bordas da tela do celular */
-            }
-        }
+    /* Data e Dia: Ocupam apenas o espaço necessário e "grudam" na esquerda */
+    #corpoTabela td:nth-child(1) { width: 18%; font-size: 10px; font-weight: bold; }
+    #corpoTabela td:nth-child(2) { width: 10%; font-size: 10px; color: #666; }
+
+    /* Voluntário: Ocupa o máximo de espaço possível, empurrando o Depto para a ponta */
+    #corpoTabela td:nth-child(3) { 
+        flex-grow: 1; /* Faz esta coluna "comer" todo o espaço vazio */
+        word-break: break-word;
+        font-weight: bold;
+        line-height: 1.1;
+        padding-right: 8px !important;
+    }
+
+    /* Departamento: Ocupa o espaço final na direita */
+    #corpoTabela td:nth-child(4) { 
+        width: 25%; 
+        text-align: right; 
+        font-size: 10px;
+        color: var(--secondary);
+    }
+
+    /* Esconde o cabeçalho original (opcional, para ganhar espaço) */
+    thead { display: none; }
+    
+    .container { padding: 10px 8px !important; }
+}
     </style>
 </head>
 
