@@ -20,13 +20,13 @@
             --success: #2ecc71;
         }
 
-body.dark-mode .btn-gerar:active, 
-body.dark-mode .btn-consultar:active, 
-body.dark-mode .btn-baixar:active, 
-body.dark-mode .btn-limpar-tudo:active {
-    box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.4), 
+        body.dark-mode .btn-gerar:active, 
+        body.dark-mode .btn-consultar:active, 
+        body.dark-mode .btn-baixar:active, 
+        body.dark-mode .btn-limpar-tudo:active {
+            box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.4), 
                 inset -4px -4px 10px rgba(255, 255, 255, 0.05);
-}
+        }
 
         /* 2. MODO NOTURNO (Substituição das variáveis de cor) */
         body.dark-mode {
@@ -38,16 +38,30 @@ body.dark-mode .btn-limpar-tudo:active {
         }
 
         /* 3. ESTILOS GERAIS E LAYOUT */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); padding: 8px; margin: 0; transition: background 0.3s; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 8px; 
+            margin: 0; 
+            transition: background 0.3s; 
+        }
         
         /* Cabeçalho principal com degradê */
         .header-app { 
             position: relative;
-            text-align: center; padding: 30px 10px; 
+            text-align: center; 
+            padding: 30px 10px; 
             background: linear-gradient(135deg, #002e5d 0%, #004a99 100%); 
-            margin: -8px -8px 15px -8px; color: white; border-radius: 0 0 30px 30px;
+            margin: -8px -8px 15px -8px; 
+            color: white; 
+            border-radius: 0 0 30px 30px;
         }
-        .logo-header { width: 140px; margin-bottom: 10px; filter: brightness(0) invert(1); }
+        .logo-header { 
+            width: 140px; 
+            margin-bottom: 10px; 
+            filter: brightness(0) invert(1); 
+        }
 
         .by-header { 
             font-size: 0.7em; 
@@ -57,7 +71,9 @@ body.dark-mode .btn-limpar-tudo:active {
             letter-spacing: 1px; 
             text-transform: lowercase; }
 
-        body.dark-mode .by-header { color: #cbd5e1; opacity: 1; }
+        body.dark-mode .by-header { 
+            color: #cbd5e1; 
+            opacity: 1; }
 
         /* Controles flutuantes (DarkMode e Redes Sociais) */
         .side-controls {
@@ -69,27 +85,86 @@ body.dark-mode .btn-limpar-tudo:active {
             gap: 8px;
             align-items: center;
         }
-
+        /* Layout dos botões gerais de controle das escalas */
         .btn-control {
-            width: 38px; height: 38px;
-            background: rgba(255, 255, 255, 0.15); color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 1.1em; backdrop-filter: blur(4px);
-            text-decoration: none; transition: 0.2s;
+            width: 38px; 
+            height: 38px;
+            background: rgba(255, 255, 255, 0.15); 
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            border-radius: 10px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            cursor: pointer; 
+            font-size: 1.1em; 
+            backdrop-filter: blur(4px);
+            text-decoration: none; 
+            transition: 0.2s;
         }
-        .btn-control:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-2px); }
+        .btn-control:hover { 
+            background: rgba(255, 255, 255, 0.25); 
+            transform: translateY(-2px); 
+        }
+
+        .btn-consultar {
+            background: var(--primary);
+            color: white;
+        }
 
         /* Container do formulário */
-        .container { max-width: 900px; margin: 0 auto; background: var(--white); padding: 15px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .section-title { font-weight: 700; color: var(--primary); margin: 20px 0 10px 0; border-left: 4px solid var(--primary); padding-left: 10px; font-size: 0.85em; text-transform: uppercase; }
-        body.dark-mode .section-title { color: #60a5fa; border-color: #60a5fa; }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: var(--white); 
+            padding: 15px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+        }
+        /* Controle layout dos títulos */
+        .section-title { 
+            font-weight: 700; 
+            color: var(--primary); 
+            margin: 20px 0 10px 0; 
+            border-left: 4px solid var(--primary); 
+            padding-left: 10px; 
+            font-size: 0.85em; 
+            text-transform: uppercase; 
+        }
 
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        label { display: block; font-weight: 600; font-size: 0.75em; color: #747d8c; margin-bottom: 4px; }
-        body.dark-mode label { color: #94a3b8; }
+        body.dark-mode .section-title { 
+            color: #60a5fa; 
+            border-color: #60a5fa; 
+        }
 
-        input, select { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 0.9em; background: var(--input-bg); color: var(--text); }
+        .grid-inputs { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+
+        label { 
+            display: block; 
+            font-weight: 600; 
+            font-size: 0.75em; 
+            color: #747d8c; 
+            margin-bottom: 4px; 
+        }
+        
+        body.dark-mode label { 
+            color: #94a3b8; 
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 2px solid var(--border); 
+            border-radius: 10px; 
+            box-sizing: border-box; 
+            font-size: 0.9em; 
+            background: var(--input-bg); 
+            color: var(--text); 
+        }
 
         /* 4. COMPONENTES DE GESTÃO DE MEMBROS */
         .legenda-dispo { 
@@ -141,10 +216,39 @@ body.dark-mode .btn-limpar-tudo:active {
         .especial-input-div { display: none; border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px; }
 
         /* 6. BOTÕES DE AÇÃO */
-        .actions { margin: 25px 0; display: flex; gap: 8px; flex-wrap: wrap; }
-        .actions button { flex: 1; height: 45px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; font-size: 0.85em; transition: 0.2s; }
-        .btn-generate { background: var(--primary); color: white; }
-        .btn-download { background: var(--secondary); color: white; }
+        .actions { 
+            margin: 25px 0; 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+        }
+
+        .actions button { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex: 1;
+            min-width: 140px; 
+            height: 45px;
+            padding: 0 10px;
+            border-radius: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border: none; 
+            font-size: 0.85em; 
+            transition: 0.2s; 
+        }
+
+        .btn-generate { 
+            background: var(--primary); 
+            color: white; 
+        }
+
+        .btn-download { 
+            background: var(--secondary); 
+            color: white; 
+        }
         
         .btn-clear { 
             background: #f8f9fa; 
@@ -323,9 +427,7 @@ body.dark-mode .btn-limpar-tudo:active {
 
     <div class="actions no-capture">
         <button class="btn-generate" onclick="gerarEscala()">🚀 Gerar Escala</button>
-        <button onclick="window.location.href='consulta.html'" style="background: var(--primary); color: white; border: none; flex: 1; height: 45px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85em; transition: 0.2s;">
-        🔍 Consultar Escala 
-        </button>
+        <button class="btn-consultar" onclick="window.location.href='consulta.html'">🔍 Consultar Escala</button>
         <button class="btn-download" onclick="baixarEscala()">📥 Baixar Escala</button>
         <button class="btn-clear" onclick="limparTudo()">⚠️ Limpar Tudo</button>
     </div>
