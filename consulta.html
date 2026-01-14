@@ -277,41 +277,43 @@
         .table-container {
             width: 100%;
             overflow-x: hidden; /* Evita que a página dance para os lados */
+            margin-top: 20px;
         }
 
         table {
             width: 100%;
             table-layout: fixed; /* Força a tabela a respeitar a largura da tela */
             border-collapse: collapse;
+            background-color: var(--white);
         }
 
         /* No mobile, reduzimos a fonte e o espaçamento */
             @media (max-width: 600px) {
             table {
                 font-size: 11px; /* Fonte pequena para caber tudo */
-                width: 100% !important;
+        
             }
 
             th, td {
-                padding: 4px 2px !important; /* Mínimo espaço lateral */
+                padding: 5px 2px !important; /* Mínimo espaço lateral */
                 letter-spacing: -0.5px; /* Letras mais próximas para economizar largura */
                 line-height: 1.2;
                 word-wrap: break-word; /* Quebra o nome em duas linhas se for grande */
                 overflow-wrap: break-word;
                 border-bottom: 1px solid var(--border);
+                color: var(--text);
             }
 
             /* Distribuição milimétrica das colunas */
             th:nth-child(1), td:nth-child(1) { width: 19%; } /* Data */
-            th:nth-child(2), td:nth-child(2) { width: 11%; } /* Dia */
-            th:nth-child(3), td:nth-child(3) { width: 45%; } /* Voluntário */
-            th:nth-child(4), td:nth-child(4) { width: 25%; } /* Depto */
+            th:nth-child(2), td:nth-child(2) { width: 10%; } /* Dia */
+            th:nth-child(3), td:nth-child(3) { width: 43%; } /* Voluntário */
+            th:nth-child(4), td:nth-child(4) { width: 28%; } /* Depto */
 
             .voluntario-nome {
-                display: block;
-                width: 100%;
+                
                 font-weight: bold;
-                color: var(--secondary);
+                color: var(--primary) !important;
             }
     
             .container {
