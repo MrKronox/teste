@@ -288,179 +288,126 @@
         }
 
         /* No mobile, reduzimos a fonte e o espaçamento */
-            @media (max-width: 600px) {
-    /* 1. Cabeçalho Adaptado: Agora ele serve como legenda fixa */
-    thead {
-        display: block;
-        background: var(--primary);
-        border-radius: 8px 8px 0 0;
-    }
+            
+        @media (max-width: 600px) {
+            /* 1. Removemos o cabeçalho azul para usar legendas internas */
+            thead { display: none; }
 
-    thead tr {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 15px;
-    }
+            /* 2. O Card */
+            #corpoTabela tr:active {
+                background-color: #f0f0f0;
+                transform: scale(0.98);
+                transition: 0.1s;
+                display: block;
+                background: var(--white);
+                margin-bottom: 12px;
+                padding: 15px;
+                border-radius: 10px;
+                border: 1px solid var(--border);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
 
-    /* Escondemos os títulos que não encaixam no layout de bloco */
-    thead th:nth-child(2), thead th:nth-child(4) { display: none; }
+            #corpoTabela td {
+                display: block;
+                width: 100% !important;
+                border: none !important;
+                padding: 4px 0 !important;
+                position: relative;
+            }
 
-    thead th {
-        font-size: 11px;
-        color: white !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border: none !important;
-    }
-
-    /* 2. Estrutura de Card Refinada */
-    #corpoTabela tr {
-        display: block;
-        padding: 15px;
-        background: var(--white);
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 2px;
-    }
-
-    #corpoTabela td {
-        display: block;
-        width: 100% !important;
-        padding: 2px 0 !important;
-        border: none !important;
-    }
-
-    /* 3. Hierarquia de Informação (Data e Dia na mesma linha) */
-    #corpoTabela td:nth-child(1) {
-        font-size: 14px;
-        font-weight: 800;
-        color: var(--text);
-        display: inline-block;
-        width: auto !important;
-    }
-
-    #corpoTabela td:nth-child(2) {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--primary);
-        display: inline-block;
-        width: auto !important;
-        margin-left: 8px; /* Espaço entre Data e Dia */
-    }
-
-    /* Nome do Voluntário em destaque */
-    #corpoTabela td:nth-child(3) {
-        font-size: 15px;
-        font-weight: 800;
-        color: var(--secondary) !important;
-        margin-top: 5px;
-        text-transform: uppercase;
-    }
-
-    /* 4. Bloco de Departamento (O "Badge") */
-    #corpoTabela td:nth-child(4) {
-        margin-top: 10px;
-        padding: 10px 12px !important;
-        background-color: rgba(0, 0, 0, 0.04);
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        border-left: 4px solid var(--primary) !important;
-    }
-
-    /* Dark Mode para o Badge */
-    body.dark-mode #corpoTabela td:nth-child(4) {
-        background-color: rgba(255, 255, 255, 0.05);
-        color: #ddd;
-    }
-}
-@media (max-width: 600px) {
-    /* 1. Removemos o cabeçalho azul para usar legendas internas */
-    thead { display: none; }
-
-    /* 2. O Card */
-    #corpoTabela tr {
-        display: block;
-        background: var(--white);
-        margin-bottom: 12px;
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    #corpoTabela td {
-        display: block;
-        width: 100% !important;
-        border: none !important;
-        padding: 4px 0 !important;
-        position: relative;
-    }
-
-    /* 3. Estilização dos Dados */
+            /* 3. Estilização dos Dados */
     
-    /* Data e Dia lado a lado */
-    #corpoTabela td:nth-child(1) {
-        font-size: 15px;
-        font-weight: 800;
-        display: inline-block;
-        width: auto !important;
-        color: var(--text);
-    }
-    #corpoTabela td:nth-child(2) {
-        font-size: 15px;
-        font-weight: 700;
-        display: inline-block;
-        width: auto !important;
-        margin-left: 10px;
-        color: var(--primary);
-    }
+            /* Data e Dia lado a lado */
+            #corpoTabela td:nth-child(1) {
+                font-size: 15px;
+                font-weight: 800;
+                display: inline-block;
+                width: auto !important;
+                color: var(--text);
+            }
+            #corpoTabela td:nth-child(2) {
+                font-size: 15px;
+                font-weight: 700;
+                display: inline-block;
+                width: auto !important;
+                margin-left: 10px;
+                color: var(--primary);
+            }
 
-    /* Voluntário com Rótulo Cinza */
-    #corpoTabela td:nth-child(3) {
-        margin-top: 10px;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--secondary) !important;
-    }
-    #corpoTabela td:nth-child(3)::before {
-        content: "VOLUNTÁRIO";
-        display: block;
-        font-size: 9px;
-        color: #999;
-        letter-spacing: 1px;
-        margin-bottom: 2px;
-    }
+            /* Voluntário com Rótulo Cinza */
+            #corpoTabela td:nth-child(3) {
+                margin-top: 10px;
+                font-size: 14px;
+                font-weight: 700;
+                color: var(--secondary) !important;
+            }
+            #corpoTabela td:nth-child(3)::before {
+                content: "VOLUNTÁRIO";
+                display: block;
+                font-size: 9px;
+                color: #999;
+                letter-spacing: 1px;
+                margin-bottom: 2px;
+            }
 
-    /* Departamento (Badge Estilizado) */
-    #corpoTabela td:nth-child(4) {
-        margin-top: 12px;
-        padding: 10px !important;
-        background-color: rgba(0, 46, 93, 0.05); /* Tom leve do seu azul */
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text);
-        display: flex;
-        align-items: center;
-    }
-    #corpoTabela td:nth-child(4)::before {
-        content: "DEPTO:";
-        font-size: 9px;
-        color: var(--primary);
-        margin-right: 8px;
-        font-weight: 800;
-    }
+            /* Departamento (Badge Estilizado) */
+            #corpoTabela td:nth-child(4) {
+                margin-top: 12px;
+                padding: 10px !important;
+                background-color: rgba(0, 46, 93, 0.05); /* Tom leve do seu azul */
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--text);
+                display: flex;
+                align-items: center;
+            }
+            #corpoTabela td:nth-child(4)::before {
+                content: "DEPTO:";
+                font-size: 9px;
+                color: var(--primary);
+                margin-right: 8px;
+                font-weight: 800;
+            }
 
-    /* Ajuste de Dark Mode */
-    body.dark-mode #corpoTabela tr {
-        background: #1e1e1e;
-    }
-    body.dark-mode #corpoTabela td:nth-child(4) {
-        background-color: rgba(255, 255, 255, 0.05);
-    }
-}
+            /* Ajuste de Dark Mode */
+            body.dark-mode #corpoTabela tr {
+                background: #1e1e1e;
+            }
+            body.dark-mode #corpoTabela td:nth-child(4) {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+            .card-hoje {
+                border-left: 8px solid #28a745 !important;
+                background-color: #f8fff9 !important;
+                position: relative !important; /* ISSO É OBRIGATÓRIO para o selo aparecer */
+                overflow: visible !important;  /* Garante que o selo não suma nas bordas */
+                z-index: 1;
+            }
+
+            /* Opcional: Adiciona um selo escrito "HOJE" no topo do card */
+            .card-hoje::after {
+                content: "HOJE";
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                background-color: #28a745;
+                color: #ffffff;
+                font-size: 10px;
+                font-weight: 900;
+                padding: 4px 10px;
+                border-radius: 4px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                display: block !important; /* Garante visibilidade */
+                z-index: 99; /* Garante que fique por cima de tudo */
+            }
+
+            /* Ajuste para o Dark Mode não ficar estranho */
+            body.dark-mode .card-hoje {
+                background-color: #1b2e1d !important;
+                border-left-color: #2fb344 !important;
+            }
+        }
     </style>
 </head>
 
@@ -521,78 +468,81 @@
 </div>
 
 <script>
-        // --- FUNÇÃO DE MODO ESCURO ---
-    function toggleDarkMode() {
+            // --- FUNÇÃO DE MODO ESCURO ---
+        function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
-        // --- VERIFICADOR DE TEMA AO CARREGAR A PÁGINA ---
-        document.addEventListener('DOMContentLoaded', () => {
-         // Se o tema salvo for dark, aplica a classe imediatamente
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+            // --- VERIFICADOR DE TEMA AO CARREGAR A PÁGINA ---
+            document.addEventListener('DOMContentLoaded', () => {
+            // Se o tema salvo for dark, aplica a classe imediatamente
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 }
             }
         );
-    function realizarConsulta() {
-        const nomeBusca = document.getElementById('buscaNome').value.trim().toLowerCase();
-        const dataBusca = document.getElementById('buscaData').value;
-        const corpo = document.getElementById('corpoTabela');
-        const stats = document.getElementById('contadorDias');
-        
-        // Se ambos estiverem vazios, reseta a tabela
-        if (!nomeBusca && !dataBusca) {
-            corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Digite um nome ou selecione uma data para pesquisar.</td></tr>`;
-            stats.innerText = "";
-            return;
-        }
 
-        const escalas = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
-        // Ordena por data
-        escalas.sort((a, b) => new Date(a.data) - new Date(b.data));
-
-        corpo.innerHTML = "";
-        let contagem = 0;
-
-        escalas.forEach(item => {
-            const nomeNoItem = item.responsaveis.toLowerCase();
-            const dataNoItem = item.data;
-            
-            // Verifica os critérios
-            const bateNome = nomeBusca === "" || nomeNoItem.includes(nomeBusca);
-            const bateData = dataBusca === "" || dataNoItem === dataBusca;
-
-            // Só mostra se atender aos critérios preenchidos (Lógica AND)
-            if (bateNome && bateData) {
-                contagem++;
-                const dataFormatada = dataNoItem.split('-').reverse().join('/');
-                
-                corpo.innerHTML += `
-                    <tr>
-                        <td><strong>${dataFormatada}</strong></td>
-                        <td>${item.diaSemana}</td>
-                        <td class="voluntario-nome">${item.responsaveis}</td>
-                        <td>${item.depto}</td>
-                    </tr>
-                `;
-            }
-        });
-
-        if (contagem === 0) {
-            corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Nenhum registro encontrado.</td></tr>`;
-            stats.innerText = "";
-        } else {
-            stats.innerText = `Encontrados ${contagem} registros.`;
-        }
-    }
+        function realizarConsulta() {
+            const nomeBusca = document.getElementById('buscaNome').value.trim().toLowerCase();
+            const dataBusca = document.getElementById('buscaData').value;
+            const corpo = document.getElementById('corpoTabela');
+            const stats = document.getElementById('contadorDias');
     
-    function limparBusca() {
-        document.getElementById('buscaNome').value = "";
-        document.getElementById('buscaData').value = "";
-        realizarConsulta();
-        document.getElementById('buscaNome').focus();
-    }
+            // Pega a data de HOJE no formato YYYY-MM-DD para comparar com o banco
+            const hojeDataISO = new Date().toISOString().split('T')[0];
+
+            if (!nomeBusca && !dataBusca) {
+                corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Digite um nome ou selecione uma data para pesquisar.</td></tr>`;
+                stats.innerText = "";
+                return;
+            }
+
+            const escalas = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
+            escalas.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+            corpo.innerHTML = "";
+            let contagem = 0;
+
+            escalas.forEach(item => {
+                const nomeNoItem = item.responsaveis.toLowerCase();
+                const dataNoItem = item.data; // Formato YYYY-MM-DD
+        
+                const bateNome = nomeBusca === "" || nomeNoItem.includes(nomeBusca);
+                const bateData = dataBusca === "" || dataNoItem === dataBusca;
+
+                if (bateNome && bateData) {
+                    contagem++;
+                    const dataFormatada = dataNoItem.split('-').reverse().join('/');
+            
+                    // VERIFICAÇÃO DO HOJE: Se a data do item for igual a hoje, aplica a classe
+                    const classeHoje = (dataNoItem === hojeDataISO) ? 'card-hoje' : '';
+
+                    corpo.innerHTML += `
+                        <tr class="${classeHoje}">
+                            <td><strong>${dataFormatada}</strong></td>
+                            <td>${item.diaSemana}</td>
+                            <td class="voluntario-nome">${item.responsaveis}</td>
+                            <td>${item.depto}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            if (contagem === 0) {
+                corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Nenhum registro encontrado.</td></tr>`;
+                stats.innerText = "";
+            } else {
+                stats.innerText = `Encontrados ${contagem} registros.`;
+            }
+        }
+    
+        function limparBusca() {
+            document.getElementById('buscaNome').value = "";
+            document.getElementById('buscaData').value = "";
+            realizarConsulta();
+            document.getElementById('buscaNome').focus();
+        }
 </script>
 
 </body>
