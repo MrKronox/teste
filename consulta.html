@@ -291,6 +291,8 @@
             @media (max-width: 600px) {
             table {
                 font-size: 11px; /* Fonte pequena para caber tudo */
+                table-layout: fixed; /* OBRIGATÓRIO para a quebra funcionar */
+                width: 100% !important;
         
             }
 
@@ -300,19 +302,24 @@
                 line-height: 1.2;
                 word-wrap: break-word; /* Quebra o nome em duas linhas se for grande */
                 overflow-wrap: break-word;
+                word-break: break-word;
+                white-space: normal;
                 border-bottom: 1px solid var(--border);
+                vertical-align: middle;
                 color: var(--text);
             }
 
             /* Distribuição milimétrica das colunas */
-            th:nth-child(1), td:nth-child(1) { width: 19%; } /* Data */
+            th:nth-child(1), td:nth-child(1) { width: 17%; } /* Data */
             th:nth-child(2), td:nth-child(2) { width: 10%; } /* Dia */
             th:nth-child(3), td:nth-child(3) { width: 43%; } /* Voluntário */
-            th:nth-child(4), td:nth-child(4) { width: 28%; } /* Depto */
+            th:nth-child(4), td:nth-child(4) { width: 30%; } /* Depto */
 
             .voluntario-nome {
                 
                 font-weight: bold;
+                display: block;
+                line-height: 1.1;
                 color: var(--primary) !important;
             }
     
