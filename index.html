@@ -352,6 +352,25 @@
         {
             background: transparent !important;
         }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background-color: var(--success);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -427,8 +446,8 @@
 
     <div class="actions no-capture">
         <button class="btn-generate" onclick="gerarEscala()">🚀 Gerar Escala</button>
-        <button class="btn-consultar" onclick="window.location.href='consulta.html'">🔍 Consultar Escala</button>
-        <button class="btn-download" onclick="baixarEscala()">📥 Baixar Escala</button>
+        <button class="btn-consultar" onclick="window.location.href='consulta.html'">🔍 Consultar Escala</button><button class="btn-download" onclick="baixarEscala()">📥 Baixar Escala</button>
+        <button id="btnConfirmarSalvar" class="btn-generate" style="display:none; background-color: var(--success)" onclick="confirmarESalvar()">✅ Confirmar e Salvar no Banco</button>
         <button class="btn-clear" onclick="limparTudo()">⚠️ Limpar Tudo</button>
     </div>
 
@@ -445,6 +464,10 @@
             </thead>
             <tbody></tbody>
         </table>
+    </div>
+
+    <div id="toast-sucesso" class="toast">
+        <span>✅ Escala salva com sucesso!</span>
     </div>
 </div>
 
@@ -566,6 +589,16 @@
     /* ============================================================
        4. LÓGICA DE GERAÇÃO DA ESCALA (O CORAÇÃO DO APP)
        ============================================================ */
+
+    function verificarConflitoNoBanco(nome, dataISO, deptoAtual) {
+        const bancoTotal = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
+        // Procura alguém com o mesmo nome na mesma data, mas em um DEPARTAMENTO DIFERENTE
+        return bancoTotal.find(item => 
+            item.data === dataISO && 
+            item.responsaveis.toLowerCase().includes(nome.toLowerCase()) &&
+            item.depto !== deptoAtual
+        );
+    }
     function gerarEscala() {
         if(membrosGeral.length === 0) return alert("Por favor, cadastre voluntários na equipe.");
         
@@ -574,34 +607,34 @@
         let caminhoImagem = "none";
         const isLouvor = deptoSelect.value === 'Louvor';
 
-        switch (deptoSelect.value) {
-        case 'Técnicos de Som':
-            caminhoImagem = "url('IMG/mesa-som.png')";
-            break;
-        case 'Pregação':
-            caminhoImagem = "url('IMG/pregacao.jpg')";
-            break;
-        case 'Recepção':
-            caminhoImagem = "url('IMG/recepcao.jpg')";
-            break;
-        case 'Diáconos':
-            caminhoImagem = "url('IMG/diacono.jpg')";
-            break;
-        case 'Escola Sabatina':
-            caminhoImagem = "url('IMG/sabatina.png')";
-            break;
-        case 'Ministério Infantil':
-            caminhoImagem = "url('IMG/infantil.jpg')";
-            break;
-        case 'Limpeza':
-            caminhoImagem = "url('IMG/limpeza.jpeg')";
-            break;
-        case 'Louvor':
-            caminhoImagem = "url('IMG/louvor.png')";
-            break;
-        default:
-            caminhoImagem = "none";
-        }
+            switch (deptoSelect.value) {
+            case 'Técnicos de Som':
+                caminhoImagem = "url('IMG/mesa-som.png')";
+                break;
+            case 'Pregação':
+                caminhoImagem = "url('IMG/pregacao.jpg')";
+                break;
+            case 'Recepção':
+                caminhoImagem = "url('IMG/recepcao.jpg')";
+                break;
+            case 'Diáconos':
+                caminhoImagem = "url('IMG/diacono.jpg')";
+                break;
+            case 'Escola Sabatina':
+                caminhoImagem = "url('IMG/sabatina.png')";
+                break;
+            case 'Ministério Infantil':
+                caminhoImagem = "url('IMG/infantil.jpg')";
+                break;
+            case 'Limpeza':
+                aminhoImagem = "url('IMG/limpeza.jpeg')";
+                break;
+            case 'Louvor':
+                caminhoImagem = "url('IMG/louvor.png')";
+                break;
+            default:
+                caminhoImagem = "none";
+                }
         areaResultado.style.setProperty('--imagem-fundo', caminhoImagem);
         let nomeFinal = deptoSelect.options[deptoSelect.selectedIndex].text;
         if (deptoSelect.value === 'Outros') {
@@ -622,6 +655,8 @@
         // Loop dia a dia pelo período selecionado
         while (dataAtual <= dataFimObj) {
             const diaSemana = dataAtual.getDay();
+            const dataISOAtual = dataAtual.toISOString().split('T')[0];
+            const deptoNomeAtual = deptoSelect.options[deptoSelect.selectedIndex].text;
             
             // Se o dia da semana estiver marcado como ativo
             if (document.getElementById(`dia-${diaSemana}`).checked) {
@@ -634,7 +669,12 @@
 
                 // SORTEIO: Prioriza quem trabalhou menos vezes (equilíbrio)
                 let escolhidosCong = aptosGeral
-                    .sort((a, b) => (contagemGeral[a.nome] || 0) - (contagemGeral[b.nome] || 0) || (Math.random() - 0.5))
+                    .sort((a, b) => {
+                        const conflitoA = verificarConflitoNoBanco(a.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
+                        const conflitoB = verificarConflitoNoBanco(b.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
+                        if (conflitoA !== conflitoB) return conflitoA - conflitoB; // Prioriza 0 (sem conflito)
+                        return (contagemGeral[a.nome] || 0) - (contagemGeral[b.nome] || 0) || (Math.random() - 0.5);
+                    })
                     .slice(0, qtdCong)
                     .map(m => {
                         contagemGeral[m.nome] = (contagemGeral[m.nome] || 0) + 1;
@@ -642,12 +682,28 @@
                     });
 
                 let escolhidosEsp = isLouvor ? aptosEsp
-                    .sort((a, b) => (contagemEspecial[a.nome] || 0) - (contagemEspecial[b.nome] || 0) || (Math.random() - 0.5))
-                    .slice(0, qtdEsp)
-                    .map(m => {
-                        contagemEspecial[m.nome] = (contagemEspecial[m.nome] || 0) + 1;
-                        return m.nome;
-                    }) : [];
+                    .sort((a, b) => {
+                        const conflitoA = verificarConflitoNoBanco(a.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
+                        const conflitoB = verificarConflitoNoBanco(b.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
+                        if (conflitoA !== conflitoB) return conflitoA - conflitoB;
+                        return (contagemEspecial[a.nome] || 0) - (contagemEspecial[b.nome] || 0) || (Math.random() - 0.5);
+                })
+                .slice(0, qtdEsp)
+                .map(m => {
+                    contagemEspecial[m.nome] = (contagemEspecial[m.nome] || 0) + 1;
+                    return m.nome;
+                }) : [];
+
+                // --- 1. Preparamos os nomes com avisos de conflito antes de montar a linha ---
+                const nomesGeralComAviso = escolhidosCong.map(n => {
+                    const c = verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
+                    return c ? `⚠️ ${n} (${c.depto})` : n;
+                });
+
+                const nomesEspComAviso = escolhidosEsp.map(n => {
+                    const c = verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
+                    return c ? `⚠️ ${n} (${c.depto})` : n;
+                });
 
                 // Criação da linha na tabela
                 const row = document.createElement('tr');
@@ -657,9 +713,9 @@
                     <td style="color:#666">${diasSemanaNome[diaSemana]}</td>
                     <td class="nomes-td">
                         ${isLouvor ? 
-                            `<div class="cong-txt"><span class="badge-louvor bg-congregacional">Congregacional:</span> <span class="val">${escolhidosCong.join(', ') || '---'}</span></div>
+                            `<div class="cong-txt"><span class="badge-louvor bg-congregacional">Congregacional:</span> <span class="val">${nomesGeralComAviso.join(', ') || '---'}</span></div>
                             ${escolhidosEsp.length > 0 ? `<div class="esp-txt" style="margin-top:5px;"><span class="badge-louvor bg-especial">Especial:</span> <span class="val">${escolhidosEsp.join(', ')}</span></div>` : ''}` 
-                            : (escolhidosCong.join(', ') || '---')
+                            : (nomesGeralComAviso.join(', ') || '---')
                         }
                     </td>
                     <td class="col-acoes">
@@ -671,25 +727,13 @@
             }
             dataAtual.setDate(dataAtual.getDate() + 1);
         }
-        let bancoDeDadosEscalas = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
-        const deptoAtual = deptoSelect.options[deptoSelect.selectedIndex].text;
-
-        const linhas = document.querySelectorAll('#tabelaEscala tbody tr');
-        linhas.forEach(linha => {
-            const dataIso = linha.cells[0].innerText.split('/').reverse().join('-');
-            const idUnico = dataIso + "_" + deptoAtual;
-            const novaEscala = 
-            {
-                id: idUnico,
-                data: dataIso,
-                diaSemana: linha.cells[1].innerText,
-                responsaveis: linha.cells[2].innerText,
-                depto: deptoAtual
-            };
-            bancoDeDadosEscalas = bancoDeDadosEscalas.filter(item => item.id !== idUnico);
-            bancoDeDadosEscalas.push(novaEscala);
-        });
-        localStorage.setItem('banco_escalas_total', JSON.stringify(bancoDeDadosEscalas));
+                const btnSalvar = document.getElementById('btnConfirmarSalvar');
+                if (btnSalvar) {
+                    btnSalvar.style.display = "block";
+                    btnSalvar.scrollIntoView({ behavior: 'smooth' });
+                }
+        
+        alert("Escala gerada como rascunho! Confira os nomes, edite se necessário e clique no botão VERDE 'Confirmar e Salvar' para gravar no banco.");
     }
 
     /* ============================================================
@@ -808,6 +852,27 @@
         localStorage.setItem('banco_escalas_total', JSON.stringify(bancoTotal));
         console.log("Sincronizado com a consulta!");
     }
+
+    function confirmarESalvar() {
+        // Chamamos a função que você já tem que lê a tabela e salva no banco
+        atualizarBancoAposEdicao();
+    
+        // Esconde o botão após salvar para mostrar que deu certo
+        document.getElementById('btnConfirmarSalvar').style.display = "none";
+
+        // Mostra o popup de salvamento
+        const toast = document.getElementById('toast-sucesso');
+        toast.classList.add('show');
+
+        // Tempo de espera para o popup sumir
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    
+        alert("✅ Sucesso! A escala definitiva foi salva no banco de dados.");
+    }
+
+    
 
 </script>
 </body>
