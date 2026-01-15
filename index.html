@@ -35,7 +35,17 @@
             --border: #334155;
             --text: #f1f5f9;
             --input-bg: #0f172a;
+            --primary: #60a5fa;
         }
+        /* Garante que o texto dentro das células da tabela fique bem visível */
+        body.dark-mode td {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .cong-txt, body.dark-mode .esp-txt {
+            color: #f1f5f9;
+        }
+        
 
         /* 3. ESTILOS GERAIS E LAYOUT */
         body { 
@@ -168,52 +178,169 @@
 
         /* 4. COMPONENTES DE GESTÃO DE MEMBROS */
         .legenda-dispo { 
-            background: #fffbe6; border: 1px solid #ffe58f; padding: 10px; 
-            border-radius: 10px; margin-bottom: 15px; font-size: 0.75em; color: #856404;
-            display: flex; flex-direction: column; gap: 5px;
+            background: #fffbe6; 
+            border: 1px solid #ffe58f; 
+            padding: 10px; 
+            border-radius: 10px; 
+            margin-bottom: 15px; 
+            font-size: 0.75em; 
+            color: #856404;
+            display: flex; 
+            flex-direction: column; 
+            gap: 5px;
         }
-        body.dark-mode .legenda-dispo { background: #1e1b0b; border-color: #423b13; color: #fbbf24; }
-        .legenda-item { display: flex; align-items: center; gap: 8px; }
 
-        .cadastro-membros { display: flex; gap: 8px; margin-bottom: 15px; }
-        .lista-membros { background: var(--input-bg); border-radius: 10px; padding: 10px; max-height: 300px; overflow-y: auto; border: 1px solid var(--border); }
+        body.dark-mode .legenda-dispo { 
+            background: #1e1b0b; 
+            border-color: #423b13; 
+            color: #fbbf24; 
+        }
+
+        .legenda-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+
+        .cadastro-membros { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 15px; 
+        }
+
+        .lista-membros { 
+            background: var(--input-bg); 
+            border-radius: 10px; 
+            padding: 10px; 
+            max-height: 300px; 
+            overflow-y: auto; 
+            border: 1px solid var(--border); 
+        }
         
         .membro-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px; border-bottom: 1px solid var(--border); background: var(--white);
-            border-radius: 8px; margin-bottom: 5px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 10px; 
+            border-bottom: 1px solid var(--border); 
+            background: var(--white);
+            border-radius: 8px; 
+            margin-bottom: 5px;
         }
-        .membro-info { display: flex; flex-direction: column; gap: 5px; }
-        .membro-nome { font-weight: bold; font-size: 0.9em; }
+
+        .membro-info { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 5px; 
+        }
+
+        .membro-nome { 
+            font-weight: bold; 
+            font-size: 0.9em; 
+        }
         
         /* Botões de dias (D, S, T, Q...) */
         .mini-dias { display: flex; gap: 4px; }
+
         .mini-dia-btn { 
-            width: 24px; height: 24px; font-size: 0.6em; border-radius: 5px; 
-            border: 1px solid var(--border); background: #eee; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-weight: bold;
+            width: 24px; 
+            height: 24px; 
+            font-size: 0.6em; 
+            border-radius: 5px; 
+            border: 1px solid var(--border); 
+            background: #eee; 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold;
         }
-        .mini-dia-btn.active { background: var(--success); color: white; border-color: var(--success); }
-        .mini-dia-btn.inactive { background: #f8d7da; color: #721c24; border-color: #f5c6cb; text-decoration: line-through; opacity: 0.6; }
+        .mini-dia-btn.active { 
+            background: var(--success); 
+            color: white; 
+            border-color: var(--success); 
+        }
+
+        .mini-dia-btn.inactive { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border-color: #f5c6cb; 
+            text-decoration: line-through; 
+            opacity: 0.6; 
+        }
         
-        body.dark-mode .mini-dia-btn.inactive { background: #451a1a; color: #f87171; border-color: #7f1d1d; opacity: 1; }
+        body.dark-mode .mini-dia-btn.inactive { 
+            background: #451a1a; 
+            color: #f87171; 
+            border-color: #7f1d1d; 
+            opacity: 1; 
+        }
 
         /* 5. CONFIGURAÇÕES DE FREQUÊNCIA (CARDS DOS DIAS) */
-        .weekdays { display: flex; justify-content: space-between; gap: 4px; margin: 15px 0; width: 100%; }
-        .day-card { 
-            flex: 1; min-width: 0; background: var(--white); padding: 8px 2px; border: 2px solid var(--border); 
-            border-radius: 10px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center;
+        .weekdays { 
+            display: flex; 
+            justify-content: space-between; 
+            gap: 4px; 
+            margin: 15px 0; 
+            width: 100%; 
         }
-        .day-card.active { border-color: var(--primary); background: rgba(0, 46, 93, 0.1); }
-        body.dark-mode .day-card.active { border-color: #60a5fa; background: rgba(96, 165, 250, 0.1); }
 
-        .day-name { font-weight: 800; font-size: 0.7em; margin-bottom: 5px; }
-        .day-card input[type="number"] { width: 85%; max-width: 38px; padding: 4px 0; text-align: center; border-radius: 6px; border: 1px solid #ccc; font-size: 0.75em; font-weight: bold; background: white; color: black; }
+        .day-card { 
+            flex: 1; min-width: 0; 
+            background: var(--white); 
+            padding: 8px 2px; 
+            border: 2px solid var(--border); 
+            border-radius: 10px; 
+            text-align: center; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+        }
+
+        .day-card.active { 
+            border-color: var(--primary);
+            background: rgba(0, 46, 93, 0.1); 
+        }
+
+        body.dark-mode .day-card.active { 
+            border-color: #60a5fa; 
+            background: rgba(96, 165, 250, 0.1); 
+        }
+
+        .day-name { 
+            font-weight: 800; 
+            font-size: 0.7em; 
+            margin-bottom: 5px; 
+        }
+
+        .day-card input[type="number"] { 
+            width: 85%; 
+            max-width: 38px; 
+            padding: 4px 0; 
+            text-align: center; 
+            border-radius: 6px; 
+            border: 1px solid #ccc; 
+            font-size: 0.75em; 
+            font-weight: bold; 
+            background: white; 
+            color: black; 
+        }
         
-        .label-pess { font-size: 0.55em; color: #888; margin-top: 2px; }
+        .label-pess { 
+            font-size: 0.55em; 
+            color: #888; 
+            margin-top: 2px; 
+        }
+
         body.dark-mode .label-pess { color: #cbd5e1; }
 
-        .especial-input-div { display: none; border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px; }
+        .especial-input-div { 
+            display: none; 
+            border-top: 1px solid #eee; 
+            margin-top: 5px; 
+            padding-top: 5px; 
+        }
 
         /* 6. BOTÕES DE AÇÃO */
         .actions { 
@@ -280,28 +407,99 @@
             text-align: center;
             overflow: hidden;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; text-align: left; }
-        th { background: #f8f9fa; color: var(--primary); padding: 12px 8px; border-bottom: 2px solid var(--primary); }
-        body.dark-mode th { background: #334155; color: #fff; border-bottom-color: #60a5fa; }
-        td { padding: 12px 8px; border-bottom: 1px solid var(--border); }
-        body.dark-mode td { color: #f1f5f9; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            font-size: 0.9em; 
+            text-align: left; 
+        }
         
-        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1em; padding: 4px; opacity: 0.7; }
-        body.dark-mode .btn-icon { filter: brightness(1.5); }
-        .titulo-escala-gerada { display: none; color: var(--primary); margin: 10px 0; font-size: 1.5em; font-weight: 800; text-transform: uppercase; }
+        th { 
+            background: #f8f9fa; 
+            color: var(--primary); 
+            padding: 12px 8px; 
+            border-bottom: 2px solid var(--primary); 
+        }
+
+        body.dark-mode th { 
+            background: #334155; 
+            color: #fff; 
+            border-bottom-color: #60a5fa; 
+        }
+
+        td { 
+            padding: 12px 8px; 
+            border-bottom: 1px solid var(--border); 
+        }
+
+        body.dark-mode td { 
+            color: #f1f5f9; 
+        }
+        
+        .btn-icon { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 1.1em; 
+            padding: 4px; 
+            opacity: 0.7; 
+        }
+
+        body.dark-mode .btn-icon { 
+            filter: brightness(1.5); 
+        }
+
+        .titulo-escala-gerada { 
+            display: none; 
+            color: var(--primary); 
+            margin: 10px 0; 
+            font-size: 1.5em; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+        }
+        
         body.dark-mode .titulo-escala-gerada { color: #fff; }
 
         /* Badges específicas para o departamento de Louvor */
-        .badge-louvor { font-size: 0.75em; font-weight: bold; text-transform: uppercase; padding: 2px 5px; border-radius: 4px; margin-right: 5px; display: inline-block; min-width: 100px; text-align: center; }
-        .bg-congregacional { background: #e3f2fd; color: #0d47a1; }
-        .bg-especial { background: #f3e5f5; color: #4a148c; }
-        body.dark-mode .bg-congregacional { background: #1e3a8a; color: #bfdbfe; }
-        body.dark-mode .bg-especial { background: #4c1d95; color: #ddd6fe; }
+        .badge-louvor { 
+            font-size: 0.75em; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            padding: 2px 5px; 
+            border-radius: 4px; 
+            margin-right: 5px; 
+            display: inline-block; 
+            min-width: 100px; 
+            text-align: center; 
+        }
+
+        .bg-congregacional { 
+            background: #e3f2fd; 
+            color: #0d47a1; 
+        }
+
+        .bg-especial { 
+            background: #f3e5f5; 
+            color: #4a148c; 
+        }
+
+        body.dark-mode .bg-congregacional { 
+            background: #1e3a8a; 
+            color: #bfdbfe; 
+        }
+
+        body.dark-mode .bg-especial { 
+            background: #4c1d95; 
+            color: #ddd6fe; 
+        }
+
 
         /* Ocultação de elementos durante o "print" da imagem */
         .capturando .col-acoes, .capturando .btn-theme-toggle, .capturando .side-controls, .capturando .no-capture { display: none !important; }
         .capturando .titulo-escala-gerada { display: block !important; }
         .capturando { width: 600px !important; }
+
         .capturando #escalaResultado 
         { 
             background-color: white !important; 
@@ -309,6 +507,7 @@
             width: 700px !important;
             padding: 30px !important;
         }
+
         #escalaResultado::before 
         {
             content: "";
@@ -370,6 +569,147 @@
 
         .toast.show {
             transform: translateX(-50%) translateY(0);
+        }
+
+        /* Container do Tooltip */
+        .btn-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        /* Criando o Balão (Tooltip) */
+        .btn-icon::after {
+            content: attr(data-tooltip); /* Pega o texto do atributo que vamos criar */
+            position: absolute;
+            bottom: 125%; /* Aparece acima do ícone */
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Seta do Balão */
+        .btn-icon::before {
+            content: "";
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+            transition: all 0.2s ease;
+            pointer-events: none !important;
+            z-index: 100;
+        }
+
+        /* Mostra o balão ao passar o mouse */
+        .btn-icon:hover::after, 
+        .btn-icon:hover::before {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Ajuste de cor para o Modo Noturno */
+        body.dark-mode .btn-icon::after {
+            background-color: var(--primary);
+            color: white;
+        }
+        body.dark-mode .btn-icon::before {
+            border-top-color: var(--primary);
+        }
+
+        /* Melhoria para Mobile: Tabela vira Cards */
+        @media (max-width: 600px) {
+            #tabelaEscala thead { display: none; } /* Esconde o cabeçalho da tabela */
+    
+            #tabelaEscala, #tabelaEscala tbody, #tabelaEscala tr, #tabelaEscala td {
+                display: block;
+                width: 100%;
+            }
+
+            #tabelaEscala tr {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                overflow: hidden;
+                padding: 10px;
+                background: var(--white);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+
+            #tabelaEscala td {
+                border: none;
+                padding: 5px 0;
+                text-align: left;
+            }
+
+            #tabelaEscala td:nth-child(1), 
+            #tabelaEscala td:nth-child(2) {
+                font-weight: 800;
+                text-transform: uppercase;
+                color: var(--primary);
+                font-size: 0.95em;
+                letter-spacing: 0.5px;
+                display: inline-block;
+                background: rgba(0, 46, 93, 0.05);
+                padding: 8px 12px;
+                border: none;
+            }
+
+            body.dark-mode #tabelaEscala td:nth-child(1){ 
+                color: #60a5fa !important; 
+                font-weight: 700; }
+
+            body.dark-mode #tabelaEscala td:nth-child(2) {
+                 color: #94a3b8 !important; }
+
+            body.dark-mode .nomes-td { 
+                color: #f8fafc !important; }
+
+            /* Estiliza a data e dia como um cabeçalho do card */
+            #tabelaEscala td:first-child {
+                font-size: 1.1em;
+                color: var(--primary);
+                border-bottom: 1px solid #eee;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .nomes-td {
+                padding: 15px 12px !important;
+                font-size: 1.1em !important;
+                font-weight: 500;
+                border: none !important;
+                line-height: 1.4;
+            }
+
+            .nomes-td .val {
+            font-weight: 700;
+            color: var(--text);
+            }
+
+            /* Ajuste para os botões de ação não ficarem perdidos */
+            .col-acoes {
+                display: flex;
+                justify-content: flex;
+                gap: 15px;
+                border-top: 1px solid #eee !important;
+                margin-top: 8px;
+                padding-top: 8px !important;
+                text-align: center !important;
+            }
         }
     </style>
 </head>
@@ -447,7 +787,7 @@
     <div class="actions no-capture">
         <button class="btn-generate" onclick="gerarEscala()">🚀 Gerar Escala</button>
         <button class="btn-consultar" onclick="window.location.href='consulta.html'">🔍 Consultar Escala</button><button class="btn-download" onclick="baixarEscala()">📥 Baixar Escala</button>
-        <button id="btnConfirmarSalvar" class="btn-generate" style="display:none; background-color: var(--success)" onclick="confirmarESalvar()">✅ Confirmar e Salvar no Banco</button>
+        <button id="btnConfirmarSalvar" class="btn-generate" style="display:none; background-color: var(--success)" onclick="confirmarESalvar()">✅ Confirmar e Salvar</button>
         <button class="btn-clear" onclick="limparTudo()">⚠️ Limpar Tudo</button>
     </div>
 
@@ -627,7 +967,7 @@
                 caminhoImagem = "url('IMG/infantil.jpg')";
                 break;
             case 'Limpeza':
-                aminhoImagem = "url('IMG/limpeza.jpeg')";
+                caminhoImagem = "url('IMG/limpeza.jpeg')";
                 break;
             case 'Louvor':
                 caminhoImagem = "url('IMG/louvor.png')";
@@ -719,8 +1059,8 @@
                         }
                     </td>
                     <td class="col-acoes">
-                        <button class="btn-icon" onclick="editarLinha(this)">✏️</button>
-                        <button class="btn-icon" onclick="excluirLinha(this)">🗑️</button>
+                        <button class="btn-icon" data-tooltip="Editar nomes desta data" onclick="editarLinha(this)">✏️</button>
+                        <button class="btn-icon" data-tooltip="Excluir esta data da escala" onclick="excluirLinha(this)">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -741,35 +1081,98 @@
        ============================================================ */
     // --- FUNÇÕES DE AÇÃO DA TABELA ---
 
+    function verificarConflitoIndividual(nome, dataIso) {
+            const bancoTotal = JSON.parse(localStorage.getItem('banco_escalas_total') || '[]');
+            // Filtra todas as escalas do banco que são na mesma data, ignorando maiúsculas/minúsculas
+            const escalasNaMesmaData = bancoTotal.filter(item => 
+                item.data === dataIso && 
+                item.responsaveis.toLowerCase().includes(nome.toLowerCase())
+            );
+
+            // Se houver mais de uma ocorrência, ou se houver uma ocorrência em depto diferente
+            return escalasNaMesmaData.length > 0;
+        }
+
     function editarLinha(btn) {
+    try {
         const row = btn.closest('tr');
         const td = row.querySelector('.nomes-td');
 
-        // Verifica se é uma linha do Louvor (pelo dataset ou pela presença da classe)
+        // 1. Lógica para o Departamento de Louvor (Preservada)
         if (row.dataset.isLouvor === "true" || td.querySelector('.cong-txt')) {
             const congTxt = td.querySelector('.cong-txt .val');
             const espTxt = td.querySelector('.esp-txt .val');
-            
             const novoCong = prompt("Editar Congregacional:", congTxt ? congTxt.innerText : "");
             if (novoCong !== null && congTxt) {
                 congTxt.innerText = novoCong;
-                
                 const divEsp = td.querySelector('.esp-txt .val');
                 if (divEsp) {
                     const novoEsp = prompt("Editar Especial:", divEsp.innerText);
                     if (novoEsp !== null) divEsp.innerText = novoEsp;
                 }
-                atualizarBancoAposEdicao();
+                document.getElementById('btnConfirmarSalvar').style.display = "inline-flex";
             }
-        } else {
-            // Edição para departamentos normais
-            const novo = prompt("Ajustar voluntários:", td.innerText);
-            if (novo !== null) {
-                td.innerText = novo;
+            return; // Sai da função após o louvor
+        } 
+
+        // 2. Lógica para Departamentos Normais
+        // Pegamos a data de forma segura
+        const celulaData = row.cells[0];
+        if (!celulaData) return;
+        
+        const dataOriginal = celulaData.innerText.trim(); // Ex: 19/01/2025
+        const dataIso = dataOriginal.split('/').reverse().join('-'); 
+        
+        // Pegamos o nome do depto atual (com fallback caso o elemento não exista)
+        const elDepto = document.getElementById('depto-nome');
+        const deptoAtual = elDepto ? elDepto.innerText : "";
+
+        // Limpa o texto para o prompt
+        let textoParaPrompt = td.innerText.replace('⚠️', '').trim();
+        if (textoParaPrompt.includes('(')) {
+            textoParaPrompt = textoParaPrompt.split('(')[0].trim();
+        }
+
+        const novoNome = prompt("Ajustar apenas os nomes dos voluntários:", textoParaPrompt);
+        
+        if (novoNome !== null && novoNome.trim() !== "") {
+            const nomeDigitado = novoNome.trim();
+            
+            // Busca conflito no localStorage
+            let conflitoEncontrado = null;
+            try {
+                const bancoTotal = JSON.parse(localStorage.getItem('banco_escalas_total') || '[]');
+                conflitoEncontrado = bancoTotal.find(item => 
+                    item.data === dataIso && 
+                    item.responsaveis.toLowerCase().includes(nomeDigitado.toLowerCase()) &&
+                    item.depto !== deptoAtual
+                );
+            } catch (e) { console.error("Erro ao ler banco:", e); }
+
+            let novoConteudo = "";
+            if (conflitoEncontrado) {
+                novoConteudo = `⚠️ ${nomeDigitado} <span style="color: #666; font-size: 0.9em; font-weight: normal;">(${conflitoEncontrado.depto})</span>`;
+            } else {
+                novoConteudo = nomeDigitado;
+            }
+
+            td.innerHTML = novoConteudo;
+            
+            const btnSalvar = document.getElementById('btnConfirmarSalvar');
+            if (btnSalvar) btnSalvar.style.display = "inline-flex";
+            
+            if (typeof atualizarBancoAposEdicao === "function") {
                 atualizarBancoAposEdicao();
             }
         }
+    } catch (error) {
+        console.error("Erro na função editarLinha:", error);
+        alert("Ocorreu um erro ao tentar editar. Verifique o console (F12).");
     }
+}
+        
+    
+
 
     function excluirLinha(btn) { 
         if(confirm("Remover este dia da escala?")) {
@@ -869,7 +1272,7 @@
             toast.classList.remove('show');
         }, 3000);
     
-        alert("✅ Sucesso! A escala definitiva foi salva no banco de dados.");
+    
     }
 
     
