@@ -305,6 +305,7 @@
                 border-radius: 10px;
                 border: 1px solid var(--border);
                 box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                position: relative !important;
             }
 
             #corpoTabela td {
@@ -361,6 +362,7 @@
                 color: var(--text);
                 display: flex;
                 align-items: center;
+                border-left: 4px solid var(--primary) !important;
             }
             #corpoTabela td:nth-child(4)::before {
                 content: "DEPTO:";
@@ -408,6 +410,50 @@
                 border-left-color: #2fb344 !important;
             }
         }
+        /* se der errado trocar essa parte*/
+        /* Container dos departamentos extras (escondido por padrão) */
+.submenu-conflitos {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background: rgba(231, 76, 60, 0.05);
+    border-radius: 0 0 10px 10px;
+    margin: 0 -15px -15px -15px; /* Ajusta para preencher o card no mobile */
+}
+
+/* Quando o card for clicado, adicionaremos a classe 'aberto' via JS */
+.card-escala.aberto .submenu-conflitos {
+    max-height: 200px; /* Altura suficiente para os balões */
+    padding: 15px;
+    border-top: 1px dashed #e74c3c;
+}
+
+/* Indicador visual de que há mais departamentos */
+.badge-conflito-aviso {
+    background: #e74c3c;
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 10px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Ajuste no card para parecer clicável */
+.card-escala {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card-escala:active {
+    transform: scale(0.98);
+}
     </style>
 </head>
 
@@ -484,58 +530,97 @@
         );
 
         function realizarConsulta() {
-            const nomeBusca = document.getElementById('buscaNome').value.trim().toLowerCase();
-            const dataBusca = document.getElementById('buscaData').value;
-            const corpo = document.getElementById('corpoTabela');
-            const stats = document.getElementById('contadorDias');
-    
-            // Pega a data de HOJE no formato YYYY-MM-DD para comparar com o banco
-            const hojeDataISO = new Date().toISOString().split('T')[0];
+    const nomeBusca = document.getElementById('buscaNome').value.trim().toLowerCase();
+    const dataBusca = document.getElementById('buscaData').value;
+    const corpo = document.getElementById('corpoTabela');
+    const stats = document.getElementById('contadorDias');
+    const hojeDataISO = new Date().toISOString().split('T')[0];
 
-            if (!nomeBusca && !dataBusca) {
-                corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Digite um nome ou selecione uma data para pesquisar.</td></tr>`;
-                stats.innerText = "";
-                return;
-            }
+    if (!nomeBusca && !dataBusca) {
+        corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Digite um nome ou selecione uma data para pesquisar.</td></tr>`;
+        stats.innerText = "";
+        return;
+    }
 
-            const escalas = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
-            escalas.sort((a, b) => new Date(a.data) - new Date(b.data));
+    const escalas = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
+    escalas.sort((a, b) => new Date(a.data) - new Date(b.data));
 
-            corpo.innerHTML = "";
-            let contagem = 0;
+    const agrupado = {};
 
-            escalas.forEach(item => {
-                const nomeNoItem = item.responsaveis.toLowerCase();
-                const dataNoItem = item.data; // Formato YYYY-MM-DD
+    escalas.forEach(item => {
+        // --- LIMPEZA DE "SUJEIRA" NOS NOMES ---
+        // 1. Remove emojis e parênteses
+        let nomeLimpo = item.responsaveis.split('(')[0].replace('⚠️', '').trim();
         
-                const bateNome = nomeBusca === "" || nomeNoItem.includes(nomeBusca);
-                const bateData = dataBusca === "" || dataNoItem === dataBusca;
+        // 2. Remove termos de departamentos que costumam "vazar" para o campo de nome
+        const termosSujeira = ["especial", "congregacional", "louvor", "pregação", "sonoplastia",":"];
+        termosSujeira.forEach(termo => {
+            const regex = new RegExp(termo, 'gi');
+            nomeLimpo = nomeLimpo.replace(regex, '');
+        });
 
-                if (bateNome && bateData) {
-                    contagem++;
-                    const dataFormatada = dataNoItem.split('-').reverse().join('/');
-            
-                    // VERIFICAÇÃO DO HOJE: Se a data do item for igual a hoje, aplica a classe
-                    const classeHoje = (dataNoItem === hojeDataISO) ? 'card-hoje' : '';
+        // 3. Remove espaços duplos e limpa as pontas
+        nomeLimpo = nomeLimpo.replace(/\s+/g, ' ').trim();
 
-                    corpo.innerHTML += `
-                        <tr class="${classeHoje}">
-                            <td><strong>${dataFormatada}</strong></td>
-                            <td>${item.diaSemana}</td>
-                            <td class="voluntario-nome">${item.responsaveis}</td>
-                            <td>${item.depto}</td>
-                        </tr>
-                    `;
-                }
-            });
+        if (!nomeLimpo || nomeLimpo.length < 2) return;
 
-            if (contagem === 0) {
-                corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Nenhum registro encontrado.</td></tr>`;
-                stats.innerText = "";
+        const bateNome = nomeBusca === "" || nomeLimpo.toLowerCase().includes(nomeBusca);
+        const bateData = dataBusca === "" || item.data === dataBusca;
+
+        if (bateNome && bateData) {
+            const chave = `${item.data}_${nomeLimpo.toLowerCase()}`;
+            if (!agrupado[chave]) {
+                agrupado[chave] = {
+                    data: item.data,
+                    diaSemana: item.diaSemana,
+                    voluntario: nomeLimpo,
+                    deptos: [item.depto]
+                };
             } else {
-                stats.innerText = `Encontrados ${contagem} registros.`;
+                if (!agrupado[chave].deptos.includes(item.depto)) {
+                    agrupado[chave].deptos.push(item.depto);
+                }
             }
         }
+    });
+
+    corpo.innerHTML = "";
+    const resultados = Object.values(agrupado);
+
+    resultados.forEach(registro => {
+        const dataFormatada = registro.data.split('-').reverse().join('/');
+        const classeHoje = (registro.data === hojeDataISO) ? 'card-hoje' : '';
+        const temConflito = registro.deptos.length > 1;
+
+        const tr = document.createElement('tr');
+        tr.className = `card-escala ${classeHoje}`;
+        if (temConflito) {
+            tr.onclick = function() { this.classList.toggle('aberto'); };
+        }
+
+        tr.innerHTML = `
+            <td><strong>${dataFormatada}</strong></td>
+            <td>${registro.diaSemana}</td>
+            <td class="voluntario-nome">
+                ${registro.voluntario}
+                ${temConflito ? `<span class="badge-conflito-aviso">⚠️ +${registro.deptos.length - 1} escala</span>` : ''}
+            </td>
+            <td>
+                <div class="depto-badge">${registro.deptos[0]}</div>
+                ${temConflito ? `
+                    <div class="submenu-conflitos">
+                        <span class="titulo-outras-escalas">⚠️ CONFLITO DE ESCALA</span>
+                        ${registro.deptos.slice(1).map(d => `<div class="depto-badge depto-alerta">${d}</div>`).join('')}
+                    </div>
+                ` : ''}
+            </td>
+        `;
+        corpo.appendChild(tr);
+    });
+
+    stats.innerText = resultados.length ? `Encontrados ${resultados.length} registros.` : "";
+    if (!resultados.length) corpo.innerHTML = `<tr><td colspan="4" class="placeholder-msg">Nenhum registro encontrado.</td></tr>`;
+}
     
         function limparBusca() {
             document.getElementById('buscaNome').value = "";
