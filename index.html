@@ -627,90 +627,58 @@
             border-top-color: var(--primary);
         }
 
-        /* Melhoria para Mobile: Tabela vira Cards */
-        @media (max-width: 600px) {
-            #tabelaEscala thead { display: none; } /* Esconde o cabeçalho da tabela */
-    
-            #tabelaEscala, #tabelaEscala tbody, #tabelaEscala tr, #tabelaEscala td {
-                display: block;
-                width: 100%;
-            }
 
-            #tabelaEscala tr {
-                display: flex;
-                flex-direction: column;
-                margin-bottom: 15px;
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                overflow: hidden;
-                padding: 10px;
-                background: var(--white);
-                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            }
-
-            #tabelaEscala td {
-                border: none;
-                padding: 5px 0;
-                text-align: left;
-            }
-
-            #tabelaEscala td:nth-child(1), 
-            #tabelaEscala td:nth-child(2) {
-                font-weight: 800;
-                text-transform: uppercase;
-                color: var(--primary);
-                font-size: 0.95em;
-                letter-spacing: 0.5px;
-                display: inline-block;
-                background: rgba(0, 46, 93, 0.05);
-                padding: 8px 12px;
-                border: none;
-            }
-
-            body.dark-mode #tabelaEscala td:nth-child(1){ 
-                color: #60a5fa !important; 
-                font-weight: 700; }
-
-            body.dark-mode #tabelaEscala td:nth-child(2) {
-                 color: #94a3b8 !important; }
-
-            body.dark-mode .nomes-td { 
-                color: #f8fafc !important; }
-
-            /* Estiliza a data e dia como um cabeçalho do card */
-            #tabelaEscala td:first-child {
-                font-size: 1.1em;
-                color: var(--primary);
-                border-bottom: 1px solid #eee;
-                margin-bottom: 8px;
-                display: flex;
-                justify-content: space-between;
-            }
-
-            .nomes-td {
-                padding: 15px 12px !important;
-                font-size: 1.1em !important;
-                font-weight: 500;
-                border: none !important;
-                line-height: 1.4;
-            }
-
-            .nomes-td .val {
-            font-weight: 700;
-            color: var(--text);
-            }
-
-            /* Ajuste para os botões de ação não ficarem perdidos */
-            .col-acoes {
-                display: flex;
-                justify-content: flex;
-                gap: 15px;
-                border-top: 1px solid #eee !important;
-                margin-top: 8px;
-                padding-top: 8px !important;
-                text-align: center !important;
-            }
+       /* Container do nome com aviso */
+        .nome-conflito {
+            position: relative;
+            display: inline-block;
+            color: var(--danger);
+            font-weight: bold;
+            cursor: help;
         }
+
+        /* O Balão (Tooltip) personalizado */
+        .nome-conflito::after {
+            content: attr(data-tooltip); /* Pega o texto do departamento aqui */
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+
+        /* A setinha do balão */
+        .nome-conflito::before {
+            content: "";
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+
+        /* Mostrar ao passar o mouse */
+        .nome-conflito:hover::after,
+        .nome-conflito:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -1037,13 +1005,11 @@
                 // --- 1. Preparamos os nomes com avisos de conflito antes de montar a linha ---
                 const nomesGeralComAviso = escolhidosCong.map(n => {
                     const c = verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
-                    return c ? `⚠️ ${n} (${c.depto})` : n;
-                });
+                    return c ? `<span class="nome-conflito" data-tooltip="Conflito com: ${c.depto}">⚠️ ${n}</span>` : n;                });
 
                 const nomesEspComAviso = escolhidosEsp.map(n => {
                     const c = verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
-                    return c ? `⚠️ ${n} (${c.depto})` : n;
-                });
+                    return c ? `<span class="nome-conflito" data-tooltip="Conflito com: ${c.depto}">⚠️ ${n}</span>` : n;                });
 
                 // Criação da linha na tabela
                 const row = document.createElement('tr');
@@ -1097,77 +1063,55 @@
     try {
         const row = btn.closest('tr');
         const td = row.querySelector('.nomes-td');
+        const dataOriginal = row.cells[0].innerText.trim();
+        const dataIso = dataOriginal.split('/').reverse().join('-'); 
+        
+        const deptoSelect = document.getElementById('tipoEscala');
+        const deptoAtual = deptoSelect.options[deptoSelect.selectedIndex].text;
 
-        // 1. Lógica para o Departamento de Louvor (Preservada)
+        // 1. Lógica para Louvor
         if (row.dataset.isLouvor === "true" || td.querySelector('.cong-txt')) {
-            const congTxt = td.querySelector('.cong-txt .val');
-            const espTxt = td.querySelector('.esp-txt .val');
-            const novoCong = prompt("Editar Congregacional:", congTxt ? congTxt.innerText : "");
-            if (novoCong !== null && congTxt) {
-                congTxt.innerText = novoCong;
-                const divEsp = td.querySelector('.esp-txt .val');
-                if (divEsp) {
-                    const novoEsp = prompt("Editar Especial:", divEsp.innerText);
-                    if (novoEsp !== null) divEsp.innerText = novoEsp;
+            const congVal = td.querySelector('.cong-txt .val');
+            const espVal = td.querySelector('.esp-txt .val');
+            
+            const novoCong = prompt("Editar Congregacional:", congVal ? congVal.innerText.replace('⚠️', '').trim() : "");
+            if (novoCong !== null && congVal) {
+                // Verifica conflito para o novo nome do Louvor
+                const c = verificarConflitoNoBanco(novoCong, dataIso, deptoAtual);
+                congVal.innerHTML = c ? `<span style="color: var(--danger); font-weight: bold;">⚠️ ${novoCong.trim()}</span>` : novoCong.trim();
+                
+                if (espVal) {
+                    const novoEsp = prompt("Editar Especial:", espVal.innerText.replace('⚠️', '').trim());
+                    if (novoEsp !== null) {
+                        const cE = verificarConflitoNoBanco(novoEsp, dataIso, deptoAtual);
+                        espVal.innerHTML = cE ? `<span style="color: var(--danger); font-weight: bold;">⚠️ ${novoEsp.trim()}</span>` : novoEsp.trim();
+                    }
                 }
                 document.getElementById('btnConfirmarSalvar').style.display = "inline-flex";
             }
-            return; // Sai da função após o louvor
+            return;
         } 
 
-        // 2. Lógica para Departamentos Normais
-        // Pegamos a data de forma segura
-        const celulaData = row.cells[0];
-        if (!celulaData) return;
-        
-        const dataOriginal = celulaData.innerText.trim(); // Ex: 19/01/2025
-        const dataIso = dataOriginal.split('/').reverse().join('-'); 
-        
-        // Pegamos o nome do depto atual (com fallback caso o elemento não exista)
-        const elDepto = document.getElementById('depto-nome');
-        const deptoAtual = elDepto ? elDepto.innerText : "";
-
-        // Limpa o texto para o prompt
+        // 2. Lógica para Deptos Normais
         let textoParaPrompt = td.innerText.replace('⚠️', '').trim();
-        if (textoParaPrompt.includes('(')) {
-            textoParaPrompt = textoParaPrompt.split('(')[0].trim();
-        }
-
-        const novoNome = prompt("Ajustar apenas os nomes dos voluntários:", textoParaPrompt);
+        const novoNome = prompt("Ajustar nomes dos voluntários:", textoParaPrompt);
         
         if (novoNome !== null && novoNome.trim() !== "") {
             const nomeDigitado = novoNome.trim();
-            
-            // Busca conflito no localStorage
-            let conflitoEncontrado = null;
-            try {
-                const bancoTotal = JSON.parse(localStorage.getItem('banco_escalas_total') || '[]');
-                conflitoEncontrado = bancoTotal.find(item => 
-                    item.data === dataIso && 
-                    item.responsaveis.toLowerCase().includes(nomeDigitado.toLowerCase()) &&
-                    item.depto !== deptoAtual
-                );
-            } catch (e) { console.error("Erro ao ler banco:", e); }
+            const conflito = verificarConflitoNoBanco(nomeDigitado, dataIso, deptoAtual);
 
-            let novoConteudo = "";
-            if (conflitoEncontrado) {
-                novoConteudo = `⚠️ ${nomeDigitado} <span style="color: #666; font-size: 0.9em; font-weight: normal;">(${conflitoEncontrado.depto})</span>`;
-            } else {
-                novoConteudo = nomeDigitado;
-            }
+            if (conflito) {
+            // Usamos a classe 'nome-conflito' e o 'data-tooltip' para o balão aparecer igual ao dos botões
+            td.innerHTML = `<span class="nome-conflito" data-tooltip="Conflito com: ${conflito.depto}">⚠️ ${nomeDigitado}</span>`;
+        } else {
+            td.innerHTML = nomeDigitado;
+        }
 
-            td.innerHTML = novoConteudo;
-            
-            const btnSalvar = document.getElementById('btnConfirmarSalvar');
-            if (btnSalvar) btnSalvar.style.display = "inline-flex";
-            
-            if (typeof atualizarBancoAposEdicao === "function") {
-                atualizarBancoAposEdicao();
-            }
+            document.getElementById('btnConfirmarSalvar').style.display = "inline-flex";
+            atualizarBancoAposEdicao();
         }
     } catch (error) {
-        console.error("Erro na função editarLinha:", error);
-        alert("Ocorreu um erro ao tentar editar. Verifique o console (F12).");
+        console.error("Erro na edição:", error);
     }
 }
         
