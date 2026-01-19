@@ -548,8 +548,18 @@
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 }
-            }
-        );
+            });
+
+        function padronizarNome(texto) {
+            if (!texto) return "";
+            return texto
+                .split('(')[0] // Remove parênteses
+                .replace(/[⚠️\u26A0]/g, '') // Remove emojis
+                .replace(/\b(especial|louvor|pregação|sonoplastia|congregacional)\b/gi, '') // Limpa termos técnicos
+                .replace(/\s+/g, ' ') // Remove espaços duplos
+                .trim()
+                .toUpperCase();
+        }
 
         function realizarConsulta() {
     const nomeBusca = document.getElementById('buscaNome').value.trim().toLowerCase();
