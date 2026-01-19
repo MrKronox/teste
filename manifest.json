@@ -1,0 +1,21 @@
+{
+  "name": "Escala de Voluntários",
+  "short_name": "Escala Igreja",
+  "description": "Consulta de escalas de departamentos da igreja",
+  "start_url": "consulta.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "icons": [
+    {
+      "src": "icone.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
