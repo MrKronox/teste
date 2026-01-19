@@ -5,6 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escala Comunicação Boa Vista</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+    <script>
+      // Configuração do Firebase (Você vai pegar no site do Firebase depois)
+      const firebaseConfig = {
+        apiKey: "AIzaSyBYtUnqsokLE1RnK1TGbswbnsLXPpvvdc0",
+        authDomain: "escala7igreja.firebaseapp.com",
+        databaseURL: "https://escala7igreja-default-rtdb.firebaseio.com",
+        projectId: "escala7igreja",
+        storageBucket: "escala7igreja.firebasestorage.app",
+        messagingSenderId: "778312493987",
+        appId: "1:778312493987:web:2851b2fc65331e4ac14816"
+      };
+      
+      // Inicializa o Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+    </script>
     
     <style>
         /* 1. VARIÁVEIS DE CORES E TEMAS (Centralização de estilos) */
@@ -1167,38 +1186,64 @@
 
     // --- SINCRONIZAÇÃO COM A PÁGINA DE CONSULTA ---
 
-    function atualizarBancoAposEdicao() {
-        let bancoTotal = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
-        const deptoSelect = document.getElementById('tipoEscala');
-        let deptoNome = deptoSelect.options[deptoSelect.selectedIndex].text;
-        
-        if (deptoSelect.value === 'Outros') {
-            const outroNome = document.getElementById('outroTipo').value.trim();
-            deptoNome = outroNome ? "✨ " + outroNome : "Outros";
-        }
-
-        const linhasTabela = document.querySelectorAll('#tabelaEscala tbody tr');
-
-        // Remove apenas os dados do departamento atual para reescrever com as edições
-        bancoTotal = bancoTotal.filter(item => item.depto !== deptoNome);
-
-        linhasTabela.forEach(linha => {
-            const dataOriginal = linha.cells[0].innerText; 
-            const dataIso = dataOriginal.split('/').reverse().join('-'); 
-            const nomesResponsaveis = linha.querySelector('.nomes-td').innerText.trim();
-
-            bancoTotal.push({
-                id: dataIso + "_" + deptoNome,
-                data: dataIso,
-                diaSemana: linha.cells[1].innerText,
-                responsaveis: nomesResponsaveis,
-                depto: deptoNome
-            });
-        });
-
-        localStorage.setItem('banco_escalas_total', JSON.stringify(bancoTotal));
-        console.log("Sincronizado com a consulta!");
+    // --- FUNÇÃO DE BOAS MANEIRAS (PADRONIZAÇÃO) ---
+    function padronizarNome(texto) {
+        if (!texto) return "";
+        return texto
+            .split('(')[0] // Remove (Som), (Louvor), etc.
+            .replace(/[⚠️\u26A0]/g, '') // Remove emojis de aviso
+            .replace(/\b(especial|louvor|pregação|sonoplastia|congregacional)\b/gi, '') // Limpa termos técnicos
+            .replace(/\s+/g, ' ') // Remove espaços duplos
+            .trim()
+            .toUpperCase();
     }
+
+
+    function atualizarBancoAposEdicao() {
+    // 1. Identificação do Departamento
+    const deptoSelect = document.getElementById('tipoEscala');
+    let deptoNome = deptoSelect.options[deptoSelect.selectedIndex].text;
+    
+    if (deptoSelect.value === 'Outros') {
+        const outroNome = document.getElementById('outroTipo').value.trim();
+        deptoNome = outroNome ? "✨ " + outroNome : "Outros";
+    }
+
+    const linhasTabela = document.querySelectorAll('#tabelaEscala tbody tr');
+
+    // 2. Loop pelas linhas da tabela
+    linhasTabela.forEach(linha => {
+        const dataOriginal = linha.cells[0].innerText; 
+        const dataIso = dataOriginal.split('/').reverse().join('-'); 
+        const nomesResponsaveisRaw = linha.querySelector('.nomes-td').innerText.trim();
+
+        // 3. USO DA FUNÇÃO DE PADRONIZAÇÃO (BOAS MANEIRAS)
+        // Chamamos a função centralizada que remove parênteses, emojis e sujeiras
+        const nomeLimpo = padronizarNome(nomesResponsaveisRaw);
+
+        if (nomeLimpo && nomeLimpo.length > 1) {
+            // 4. EVITAR DUPLICIDADE (OTIMIZAÇÃO)
+            // Criamos o ID baseado na DATA e DEPTO. Ex: 2024-05-20_TECNICOS_DE_SOM
+            const deptoID = deptoNome.toUpperCase().trim().replace(/\s+/g, '_');
+            const idCaminho = `${dataIso}_${deptoID}`;
+
+            // 5. SALVAMENTO NA NUVEM (FIREBASE)
+            db.ref('escalas/' + idCaminho).set({
+                data: dataIso,
+                diaSemana: linha.cells[1].innerText.toUpperCase(),
+                responsaveis: nomeLimpo, // Agora o nome está 100% limpo para a busca
+                depto: deptoNome.toUpperCase(),
+                timestamp: Date.now() // Útil para auditoria ou saber qual foi a última versão salva
+            }).then(() => {
+                console.log("Sincronizado com sucesso: " + idCaminho);
+            }).catch((error) => {
+                console.error("Erro ao salvar no Firebase:", error);
+            });
+        }
+    });
+
+    console.log("Processo de sincronização finalizado!");
+}
 
     function confirmarESalvar() {
         // Chamamos a função que você já tem que lê a tabela e salva no banco
