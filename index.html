@@ -7,10 +7,10 @@
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007bff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">    
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icone.png">
-    
+
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
@@ -924,16 +924,52 @@
        4. LÓGICA DE GERAÇÃO DA ESCALA (O CORAÇÃO DO APP)
        ============================================================ */
 
-    function verificarConflitoNoBanco(nome, dataISO, deptoAtual) {
-        const bancoTotal = JSON.parse(localStorage.getItem('banco_escalas_total')) || [];
-        // Procura alguém com o mesmo nome na mesma data, mas em um DEPARTAMENTO DIFERENTE
-        return bancoTotal.find(item => 
-            item.data === dataISO && 
-            item.responsaveis.toLowerCase().includes(nome.toLowerCase()) &&
-            item.depto !== deptoAtual
-        );
+
+
+
+    // Adicionamos 'async' para permitir o uso de 'await' na busca ao Firebase
+    async function verificarConflitoNoBanco(nome, dataISO, deptoAtual) {
+    if (!nome || nome.length < 3) return null;
+
+    try {
+        const snapshot = await db.ref('escalas').orderByChild('data').equalTo(dataISO).once('value');
+        const escalasNoDia = snapshot.val();
+
+        if (!escalasNoDia) return null;
+
+        const escalasArray = Object.values(escalasNoDia);
+        const nomeBuscado = nome.toLowerCase().trim();
+        const deptoAtualUpper = deptoAtual.toUpperCase().trim();
+
+        // 1. Usamos FILTER para encontrar TODOS os conflitos de uma vez
+        const conflitos = escalasArray.filter(item => {
+            const nomeNaEscala = (item.responsaveis || "").toLowerCase().trim();
+            const deptoNaEscala = (item.depto || "").toUpperCase().trim();
+            
+            return nomeNaEscala === nomeBuscado && deptoNaEscala !== deptoAtualUpper;
+        });
+
+        // 2. Se não houver nenhum conflito, retorna null
+        if (conflitos.length === 0) return null;
+
+        // 3. Extraímos os nomes dos departamentos e removemos duplicados (caso existam)
+        const nomesDeptos = [...new Set(conflitos.map(c => c.depto || "Outro"))];
+
+        // 4. Retornamos um objeto que contém a lista de todos os deptos separados por vírgula
+        return {
+            depto: nomesDeptos.join(', ')
+        };
+
+    } catch (error) {
+        console.error("Erro ao verificar conflito no Firebase:", error);
+        return null;
     }
-    function gerarEscala() {
+}
+
+
+
+    // 1. ADICIONAMOS 'async' AQUI NO COMEÇO
+    async function gerarEscala() {
         if(membrosGeral.length === 0) return alert("Por favor, cadastre voluntários na equipe.");
         
         const deptoSelect = document.getElementById('tipoEscala');
@@ -941,34 +977,19 @@
         let caminhoImagem = "none";
         const isLouvor = deptoSelect.value === 'Louvor';
 
-            switch (deptoSelect.value) {
-            case 'Técnicos de Som':
-                caminhoImagem = "url('IMG/mesa-som.png')";
-                break;
-            case 'Pregação':
-                caminhoImagem = "url('IMG/pregacao.jpg')";
-                break;
-            case 'Recepção':
-                caminhoImagem = "url('IMG/recepcao.jpg')";
-                break;
-            case 'Diáconos':
-                caminhoImagem = "url('IMG/diacono.jpg')";
-                break;
-            case 'Escola Sabatina':
-                caminhoImagem = "url('IMG/sabatina.png')";
-                break;
-            case 'Ministério Infantil':
-                caminhoImagem = "url('IMG/infantil.jpg')";
-                break;
-            case 'Limpeza':
-                caminhoImagem = "url('IMG/limpeza.jpeg')";
-                break;
-            case 'Louvor':
-                caminhoImagem = "url('IMG/louvor.png')";
-                break;
-            default:
-                caminhoImagem = "none";
-                }
+        // ... (seu código de switch/case das imagens permanece igual) ...
+        switch (deptoSelect.value) {
+            case 'Técnicos de Som': caminhoImagem = "url('IMG/mesa-som.png')"; break;
+            case 'Pregação': caminhoImagem = "url('IMG/pregacao.jpg')"; break;
+            case 'Recepção': caminhoImagem = "url('IMG/recepcao.jpg')"; break;
+            case 'Diáconos': caminhoImagem = "url('IMG/diacono.jpg')"; break;
+            case 'Escola Sabatina': caminhoImagem = "url('IMG/sabatina.png')"; break;
+            case 'Ministério Infantil': caminhoImagem = "url('IMG/infantil.jpg')"; break;
+            case 'Limpeza': caminhoImagem = "url('IMG/limpeza.jpeg')"; break;
+            case 'Louvor': caminhoImagem = "url('IMG/louvor.png')"; break;
+            default: caminhoImagem = "none";
+        }
+
         areaResultado.style.setProperty('--imagem-fundo', caminhoImagem);
         let nomeFinal = deptoSelect.options[deptoSelect.selectedIndex].text;
         if (deptoSelect.value === 'Outros') {
@@ -986,29 +1007,21 @@
         let dataAtual = new Date(document.getElementById('dataInicio').value + "T00:00:00");
         const dataFimObj = new Date(document.getElementById('dataFim').value + "T00:00:00");
 
-        // Loop dia a dia pelo período selecionado
         while (dataAtual <= dataFimObj) {
             const diaSemana = dataAtual.getDay();
             const dataISOAtual = dataAtual.toISOString().split('T')[0];
             const deptoNomeAtual = deptoSelect.options[deptoSelect.selectedIndex].text;
             
-            // Se o dia da semana estiver marcado como ativo
             if (document.getElementById(`dia-${diaSemana}`).checked) {
                 const qtdCong = parseInt(document.getElementById(`qtd-${diaSemana}`).value) || 1;
                 const qtdEsp = isLouvor ? (parseInt(document.getElementById(`qtd-esp-${diaSemana}`).value) || 0) : 0;
 
-                // Filtra quem pode trabalhar neste dia
                 let aptosGeral = membrosGeral.filter(m => m.disponivel.includes(diaSemana));
                 let aptosEsp = membrosEspecial.filter(m => m.disponivel.includes(diaSemana));
 
-                // SORTEIO: Prioriza quem trabalhou menos vezes (equilíbrio)
+                // Sorteio inicial (baseado em quem trabalhou menos)
                 let escolhidosCong = aptosGeral
-                    .sort((a, b) => {
-                        const conflitoA = verificarConflitoNoBanco(a.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
-                        const conflitoB = verificarConflitoNoBanco(b.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
-                        if (conflitoA !== conflitoB) return conflitoA - conflitoB; // Prioriza 0 (sem conflito)
-                        return (contagemGeral[a.nome] || 0) - (contagemGeral[b.nome] || 0) || (Math.random() - 0.5);
-                    })
+                    .sort((a, b) => (contagemGeral[a.nome] || 0) - (contagemGeral[b.nome] || 0) || (Math.random() - 0.5))
                     .slice(0, qtdCong)
                     .map(m => {
                         contagemGeral[m.nome] = (contagemGeral[m.nome] || 0) + 1;
@@ -1016,28 +1029,28 @@
                     });
 
                 let escolhidosEsp = isLouvor ? aptosEsp
-                    .sort((a, b) => {
-                        const conflitoA = verificarConflitoNoBanco(a.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
-                        const conflitoB = verificarConflitoNoBanco(b.nome, dataISOAtual, deptoNomeAtual) ? 1 : 0;
-                        if (conflitoA !== conflitoB) return conflitoA - conflitoB;
-                        return (contagemEspecial[a.nome] || 0) - (contagemEspecial[b.nome] || 0) || (Math.random() - 0.5);
-                })
-                .slice(0, qtdEsp)
-                .map(m => {
-                    contagemEspecial[m.nome] = (contagemEspecial[m.nome] || 0) + 1;
-                    return m.nome;
-                }) : [];
+                    .sort((a, b) => (contagemEspecial[a.nome] || 0) - (contagemEspecial[b.nome] || 0) || (Math.random() - 0.5))
+                    .slice(0, qtdEsp)
+                    .map(m => {
+                        contagemEspecial[m.nome] = (contagemEspecial[m.nome] || 0) + 1;
+                        return m.nome;
+                    }) : [];
 
-                // --- 1. Preparamos os nomes com avisos de conflito antes de montar a linha ---
-                const nomesGeralComAviso = escolhidosCong.map(n => {
-                    const c = verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
-                    return c ? `<span class="nome-conflito" data-tooltip="Conflito com: ${c.depto}">⚠️ ${n}</span>` : n;                });
+                // --- AQUI ESTÁ A CORREÇÃO PRINCIPAL: AGUARDAR O FIREBASE ---
+                
+                // Processamos os nomes um a um, esperando a resposta do banco de dados
+                const nomesGeralComAviso = await Promise.all(escolhidosCong.map(async n => {
+                    const c = await verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
+                    // Se houver conflito, mostramos o ⚠️ e o departamento correto no tooltip
+                    return c ? `<span class="nome-conflito" data-tooltip="Conflito com: ${c.depto || 'Outro'}">⚠️ ${n}</span>` : n;
+                }));
 
-                const nomesEspComAviso = escolhidosEsp.map(n => {
-                    const c = verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
-                    return c ? `<span class="nome-conflito" data-tooltip="Conflito com: ${c.depto}">⚠️ ${n}</span>` : n;                });
+                const nomesEspComAviso = await Promise.all(escolhidosEsp.map(async n => {
+                    const c = await verificarConflitoNoBanco(n, dataISOAtual, deptoNomeAtual);
+                    return c ? `<span class="nome-conflito" data-tooltip="Conflito com: ${c.depto || 'Outro'}">⚠️ ${n}</span>` : n;
+                }));
 
-                // Criação da linha na tabela
+                // Criação da linha na tabela (permanece similar, mas usa as variáveis com aviso)
                 const row = document.createElement('tr');
                 row.dataset.isLouvor = isLouvor;
                 row.innerHTML = `
@@ -1046,26 +1059,27 @@
                     <td class="nomes-td">
                         ${isLouvor ? 
                             `<div class="cong-txt"><span class="badge-louvor bg-congregacional">Congregacional:</span> <span class="val">${nomesGeralComAviso.join(', ') || '---'}</span></div>
-                            ${escolhidosEsp.length > 0 ? `<div class="esp-txt" style="margin-top:5px;"><span class="badge-louvor bg-especial">Especial:</span> <span class="val">${escolhidosEsp.join(', ')}</span></div>` : ''}` 
+                            ${nomesEspComAviso.length > 0 ? `<div class="esp-txt" style="margin-top:5px;"><span class="badge-louvor bg-especial">Especial:</span> <span class="val">${nomesEspComAviso.join(', ')}</span></div>` : ''}` 
                             : (nomesGeralComAviso.join(', ') || '---')
                         }
                     </td>
                     <td class="col-acoes">
-                        <button class="btn-icon" data-tooltip="Editar nomes desta data" onclick="editarLinha(this)">✏️</button>
-                        <button class="btn-icon" data-tooltip="Excluir esta data da escala" onclick="excluirLinha(this)">🗑️</button>
+                        <button class="btn-icon" data-tooltip="Editar" onclick="editarLinha(this)">✏️</button>
+                        <button class="btn-icon" data-tooltip="Excluir" onclick="excluirLinha(this)">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(row);
             }
             dataAtual.setDate(dataAtual.getDate() + 1);
         }
-                const btnSalvar = document.getElementById('btnConfirmarSalvar');
-                if (btnSalvar) {
-                    btnSalvar.style.display = "block";
-                    btnSalvar.scrollIntoView({ behavior: 'smooth' });
-                }
+
+        const btnSalvar = document.getElementById('btnConfirmarSalvar');
+        if (btnSalvar) {
+            btnSalvar.style.display = "block";
+            btnSalvar.scrollIntoView({ behavior: 'smooth' });
+        }
         
-        alert("Escala gerada como rascunho! Confira os nomes, edite se necessário e clique no botão VERDE 'Confirmar e Salvar' para gravar no banco.");
+        alert("Escala gerada como rascunho! Confira os alertas ⚠️ se houver.");
     }
 
     /* ============================================================
@@ -1085,61 +1099,67 @@
             return escalasNaMesmaData.length > 0;
         }
 
-    function editarLinha(btn) {
-    try {
-        const row = btn.closest('tr');
-        const td = row.querySelector('.nomes-td');
-        const dataOriginal = row.cells[0].innerText.trim();
-        const dataIso = dataOriginal.split('/').reverse().join('-'); 
-        
-        const deptoSelect = document.getElementById('tipoEscala');
-        const deptoAtual = deptoSelect.options[deptoSelect.selectedIndex].text;
-
-        // 1. Lógica para Louvor
-        if (row.dataset.isLouvor === "true" || td.querySelector('.cong-txt')) {
-            const congVal = td.querySelector('.cong-txt .val');
-            const espVal = td.querySelector('.esp-txt .val');
+    // 1. Adicionamos 'async' aqui no início
+    async function editarLinha(btn) {
+        try {
+            const row = btn.closest('tr');
+            const td = row.querySelector('.nomes-td');
+            const dataOriginal = row.cells[0].innerText.trim();
+            const dataIso = dataOriginal.split('/').reverse().join('-'); 
             
-            const novoCong = prompt("Editar Congregacional:", congVal ? congVal.innerText.replace('⚠️', '').trim() : "");
-            if (novoCong !== null && congVal) {
-                // Verifica conflito para o novo nome do Louvor
-                const c = verificarConflitoNoBanco(novoCong, dataIso, deptoAtual);
-                congVal.innerHTML = c ? `<span style="color: var(--danger); font-weight: bold;">⚠️ ${novoCong.trim()}</span>` : novoCong.trim();
+            const deptoSelect = document.getElementById('tipoEscala');
+            const deptoAtual = deptoSelect.options[deptoSelect.selectedIndex].text;
+
+            // 2. Lógica para Louvor
+            if (row.dataset.isLouvor === "true" || td.querySelector('.cong-txt')) {
+                const congVal = td.querySelector('.cong-txt .val');
+                const espVal = td.querySelector('.esp-txt .val');
                 
-                if (espVal) {
-                    const novoEsp = prompt("Editar Especial:", espVal.innerText.replace('⚠️', '').trim());
-                    if (novoEsp !== null) {
-                        const cE = verificarConflitoNoBanco(novoEsp, dataIso, deptoAtual);
-                        espVal.innerHTML = cE ? `<span style="color: var(--danger); font-weight: bold;">⚠️ ${novoEsp.trim()}</span>` : novoEsp.trim();
+                const novoCong = prompt("Editar Congregacional:", congVal ? congVal.innerText.replace('⚠️', '').trim() : "");
+                if (novoCong !== null && congVal) {
+                    // ADICIONADO 'await' AQUI
+                    const c = await verificarConflitoNoBanco(novoCong, dataIso, deptoAtual);
+                    
+                    // Melhoria: Adicionado o data-tooltip aqui também para mostrar onde está o conflito no Louvor
+                    congVal.innerHTML = c ? `<span class="nome-conflito" data-tooltip="Conflito: ${c.depto}" style="color: var(--danger); font-weight: bold;">⚠️ ${novoCong.trim()}</span>` : novoCong.trim();
+                    
+                    if (espVal) {
+                        const novoEsp = prompt("Editar Especial:", espVal.innerText.replace('⚠️', '').trim());
+                        if (novoEsp !== null) {
+                            // ADICIONADO 'await' AQUI
+                            const cE = await verificarConflitoNoBanco(novoEsp, dataIso, deptoAtual);
+                            espVal.innerHTML = cE ? `<span class="nome-conflito" data-tooltip="Conflito: ${cE.depto}" style="color: var(--danger); font-weight: bold;">⚠️ ${novoEsp.trim()}</span>` : novoEsp.trim();
+                        }
                     }
+                    document.getElementById('btnConfirmarSalvar').style.display = "inline-flex";
                 }
+                return;
+            } 
+
+            // 3. Lógica para Deptos Normais
+            let textoParaPrompt = td.innerText.replace('⚠️', '').trim();
+            const novoNome = prompt("Ajustar nomes dos voluntários:", textoParaPrompt);
+            
+            if (novoNome !== null && novoNome.trim() !== "") {
+                const nomeDigitado = novoNome.trim();
+                
+                // ADICIONADO 'await' AQUI - Este era o ponto principal do erro
+                const conflito = await verificarConflitoNoBanco(nomeDigitado, dataIso, deptoAtual);
+
+                if (conflito) {
+                    // Agora 'conflito.depto' virá preenchido corretamente pelo Firebase
+                    td.innerHTML = `<span class="nome-conflito" data-tooltip="Conflito com: ${conflito.depto}">⚠️ ${nomeDigitado}</span>`;
+                } else {
+                    td.innerHTML = nomeDigitado;
+                }
+
                 document.getElementById('btnConfirmarSalvar').style.display = "inline-flex";
+                // Dica: Cuidado ao chamar atualizarBancoAposEdicao() aqui se a página for recarregar
             }
-            return;
-        } 
-
-        // 2. Lógica para Deptos Normais
-        let textoParaPrompt = td.innerText.replace('⚠️', '').trim();
-        const novoNome = prompt("Ajustar nomes dos voluntários:", textoParaPrompt);
-        
-        if (novoNome !== null && novoNome.trim() !== "") {
-            const nomeDigitado = novoNome.trim();
-            const conflito = verificarConflitoNoBanco(nomeDigitado, dataIso, deptoAtual);
-
-            if (conflito) {
-            // Usamos a classe 'nome-conflito' e o 'data-tooltip' para o balão aparecer igual ao dos botões
-            td.innerHTML = `<span class="nome-conflito" data-tooltip="Conflito com: ${conflito.depto}">⚠️ ${nomeDigitado}</span>`;
-        } else {
-            td.innerHTML = nomeDigitado;
+        } catch (error) {
+            console.error("Erro na edição:", error);
         }
-
-            document.getElementById('btnConfirmarSalvar').style.display = "inline-flex";
-            atualizarBancoAposEdicao();
-        }
-    } catch (error) {
-        console.error("Erro na edição:", error);
     }
-}
         
     
 
